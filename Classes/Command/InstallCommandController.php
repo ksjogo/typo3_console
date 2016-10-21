@@ -302,6 +302,14 @@ class InstallCommandController extends CommandController
     {
         $localConfFile = PATH_typo3conf . 'LocalConfiguration.php';
         $packageStatesFile = PATH_typo3conf . 'PackageStates.php';
+
+        // LocalConfiguration.php is linked to some other location but is not existing there
+        // e.g. platformsh installation
+        if (is_link($localConfFile) && !file_exists(readlink($localConfFile))) {
+            //just return early to skip the other checks
+            return;
+        }
+
         if (!$force && file_exists($localConfFile)) {
             $this->outputLine();
             $this->outputLine('<error>TYPO3 seems to be already set up!</error>');
